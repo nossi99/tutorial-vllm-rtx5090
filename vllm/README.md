@@ -33,7 +33,7 @@ The image is based on the [NVIDIA PyTorch image](https://hub.docker.com/r/nvidia
 
 ```bash
 mkdir -p ~/vllm/ccache
-podman build -v ~/vllm/ccache:/root/.ccache  -t vllm-cu128 -f Dockerfile
+docker build -v ~/vllm/ccache:/root/.ccache -t vllm-cu128 -f Dockerfile .
 ```
 
 ---
@@ -41,8 +41,8 @@ podman build -v ~/vllm/ccache:/root/.ccache  -t vllm-cu128 -f Dockerfile
 ## Run vLLM
 
 ```bash
-podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable \
-    --net=host --ipc=host \
+docker run --rm --gpus all \
+    --network=host --ipc=host \
     -v ~/.cache:/root/.cache \
     --env "HUGGING_FACE_HUB_TOKEN=<hf_token>" \
     --env "VLLM_ATTENTION_BACKEND=FLASHINFER" \
@@ -52,7 +52,7 @@ podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable \
     --enable-chunked-prefill \
     --max-model-len 32768 \
     --enable-reasoning --reasoning-parser deepseek_r1 \
-    --enable-auto-tool-choice --tool-call-parser hermes 
+    --enable-auto-tool-choice --tool-call-parser hermes
 ```
 Note that the reasoning is enabled which means we will have a [reasoning_content](https://docs.vllm.ai/en/latest/features/reasoning_outputs.html) in the assistant message. Also [tool usage](https://qwen.readthedocs.io/en/latest/framework/function_call.html#vllm) is supported and works well with QwQ-32b.
 
